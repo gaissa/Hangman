@@ -3,7 +3,7 @@ using System.Text;
 
 /// <summary>
 /// Hangman v.1.00
-/// By Janne Kähkönen
+/// By Janne KÃ¤hkÃ¶nen
 /// </summary>
 class Hangman
 {
