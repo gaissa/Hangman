@@ -1,4 +1,4 @@
 Hangman
 =======
 
-Just a simple hangman version for console with C#.
+A simple hangman prototype for console/terminal with C#.
