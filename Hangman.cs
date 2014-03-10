@@ -1,26 +1,23 @@
 using System;
+using System.IO;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 
 /// <summary>
-/// Hangman v.1.00
+/// Hangman v.1.0.9
 /// By Janne Kähkönen <http://koti.tamk.fi/~c1jkahko/>
 /// </summary>
 class Hangman
 {
-    private static string[] arr1 = new string[] { "mouse", "loop", "computer",
-                                                  "interface", "internet",
-                                                  "machine", "debian", "web",
-                                                  "windows", "syntax", "irc",
-                                                  "python", "java", "binary" };
+    // The chosen word.
+    private static string randomWord;
 
     // Set the score variable.
     private static int score = 0;
 
     // Set the width for the game.
-    private static int x = 30;
-
-    // Random number for picking the word.
-    private static int randomNumber;
+    private static int width = 40;
 
     // StringBuilders to store information.
     private static StringBuilder builder = new StringBuilder();
@@ -33,21 +30,32 @@ class Hangman
     /// </summary>
     static void Main(string[] args)
     {
-
         // Set the cursor visible and set the title.
         Console.CursorVisible = true;
         Console.Title = "Hangman";
 
-        // Pick random word.
-        Random random = new Random();
-        randomNumber = random.Next(0, arr1.Length);
-        string str = arr1[randomNumber];
+        // Create a web client.
+        WebClient client = new WebClient();
 
-        // Insert the picked word to StringBuilder.
-        word.Insert(0, str);
+        // Clear and write to console.
+        Console.Clear();
+        Console.Write("LOADING...");
 
-        // Make copy with chars hidden.
-        for (int i = 0; i < str.Length; i++) {
+        // Download string and match the title.
+        string value = client.DownloadString("http://fi.wikipedia.org/wiki/Toiminnot:Satunnainen_sivu");
+        string title = Regex.Match(value, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>", RegexOptions.IgnoreCase).Groups["Title"].Value;
+
+        title = title.Substring(0, title.Length - 13);
+        
+        byte[] bytes = Encoding.Default.GetBytes(title);
+        randomWord = Encoding.UTF8.GetString(bytes);
+
+        // Insert the picked word to the StringBuilder.
+        word.Insert(0, randomWord);
+
+        // Make a copy with characters hidden.
+        for (int i = 0; i < randomWord.Length; i++)
+        {
             builder.Insert(i, "_");
         }
 
@@ -64,8 +72,8 @@ class Hangman
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("YOUR GUESSES  : "+ guessed);
-            Console.Write("\nWRONG GUESSES : "+score*(-1));
+            Console.Write("CHARS : "+ guessed);
+            Console.Write("\nWRONG : "+score*(-1));
             CreateUI();
         }
     }
@@ -78,7 +86,6 @@ class Hangman
         Console.Write("\n");
 
         DrawX();
-
         DrawRope();
         DrawHanged();
 
@@ -118,7 +125,7 @@ class Hangman
         // Roll turn.
         score = score-1;
 
-        // Check Letter.
+        // Check character.
         for (int i = 0; i < word.Length; i++)
         {
             if (word[i] == reader[reader.Length-1])
@@ -145,11 +152,10 @@ class Hangman
     {
         Console.ForegroundColor = ConsoleColor.DarkRed;
 
-        for (int a = 0; a < x; a++)
+        for (int a = 0; a < width; a++)
         {
             Console.Write("=");
-        }
-        Console.Write(">");
+        }        
     }
 
     /// <summary>
@@ -162,7 +168,7 @@ class Hangman
         Console.Write("\n");
         Console.Write("   ");
 
-        for (int a = 0; a < x-8; a++)
+        for (int a = 0; a < width-18; a++)
         {
             Console.Write("=");
         }
@@ -178,7 +184,7 @@ class Hangman
                         |
                         |
                         |
-                       / \");
+                       | |");
     }
 
     /// <summary>
@@ -284,5 +290,4 @@ class Hangman
 
         Console.Write("\n\n\n\n");
     }
-
 }
