@@ -1,7 +1,8 @@
 #Hangman
 
 A simple hangman prototype for console/terminal with C#.
-The app fetches the words from website headers/titles and makes a simple game of hangman for you :)
+
+The app fetches a random word from a website header/title and makes a simple game of hangman for you :)
 
 Install and Run
 --
